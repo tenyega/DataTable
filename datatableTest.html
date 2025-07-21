@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DataTables Example</title>
+
+  <!-- ✅ Include jQuery (required for DataTables to work) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <!-- ✅ DataTables CSS (for table styling: search bar, pagination etc.) -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+  <!-- ✅ DataTables JS (the core library that turns a normal HTML table into a dynamic one) -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+  <!-- ✅ DataTables Buttons Extension (for exporting options like Excel, CSV, PDF, Print) -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+
+  <!-- ✅ Additional dependencies required for exporting features -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script> <!-- For Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script> <!-- For PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script> <!-- PDF font files -->
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script> <!-- HTML5 Export buttons -->
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script> <!-- Print button -->
+
+</head>
+<body>
+
+  <h2>Employee Table</h2>
+
+  <!-- ✅ Define your HTML table (only headers). Data will be loaded dynamically from JSON. -->
+  <table id="ajaxTable" class="display">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Position</th>
+        <th>Office</th>
+        <th>Age</th>
+        <th>Start date</th>
+      </tr>
+    </thead>
+  </table>
+
+  <!-- ✅ JavaScript to initialize and configure DataTables -->
+  <script>
+    $(document).ready(function () {
+
+      // ✅ Initialize the DataTable on table with ID 'ajaxTable'
+      $('#ajaxTable').DataTable({
+        // ✅ Load data dynamically from an external file named 'data.json'
+        ajax: 'data.json',
+
+        // ✅ Define the columns and map them to keys in the JSON
+        columns: [
+          { data: 'name' },
+          { data: 'position' },
+          { data: 'office' },
+          { data: 'age' },
+          { data: 'start_date' }
+        ],
+
+        // ✅ dom: 'Bfrtip' defines the layout of the table controls:
+        // B = Buttons, f = search Filter, r = pRocessing indicator, t = Table, i = table Info, p = Pagination
+        dom: 'Bfrtip',
+
+        // ✅ Add export buttons (copy, Excel, CSV, PDF, Print)
+        buttons: [
+          'copyHtml5',
+          'excelHtml5',
+          'csvHtml5',
+          'pdfHtml5',
+          'print'
+        ],
+
+        // ✅ Set the interface to French using the CDN translation file
+        language: {
+          url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+        }
+      });
+    });
+
+    // ✅ After each time the table is (re)drawn (like after data is loaded),
+    // make the cells contenteditable (so user can modify text directly)
+    $('#ajaxTable').on('draw.dt', function () {
+      // Select all <td> cells in the table body and make them editable
+      $('#ajaxTable tbody td').attr('contenteditable', true);
+    });
+  </script>
+
+</body>
+</html>
