@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Editable DataTable</title>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+  <!-- Buttons -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+</head>
+<body>
+
+  <h2>Editable Employee Table</h2>
+
+  <table id="editableTable" class="display">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Position</th>
+        <th>Office</th>
+        <th>Age</th>
+        <th>Start Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    
+  </table>
+
+  <script>
+    $(document).ready(function () {
+      const table = $('#editableTable').DataTable({
+      ajax: 'data.json',
+      columns: [
+        { data: 'name' },
+        { data: 'position' },
+        { data: 'office' },
+        { data: 'age' },
+        { data: 'start_date' },
+        { data: 'null',  // just to indicate that it doesnt come from Datatable. and its default content is a save button
+            defaultContent: '<button class="save-btn">💾 Save</button>'
+        }
+      ],
+      dom: 'Bfrtip', // this actually prints the button 
+  buttons: [ // this contains the type of button to be printed on the webpage. 
+    'copyHtml5',
+    'excelHtml5',
+    'csvHtml5',
+    'pdfHtml5',
+    'print'
+  ],
+      language: {
+        url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+      }
+    });
+
+   
+  // Make cells editable (except the last column)
+  $('#editableTable').on('draw.dt', function () {
+    $('#editableTable tbody tr').each(function () {
+      $(this).find('td:not(:last-child)').attr('contenteditable', true);
+    });
+  });
+
+  // Save button handler
+  $('#editableTable').on('click', '.save-btn', function () {
+    const row = $(this).closest('tr');
+    const rowData = {
+      name: row.find('td:eq(0)').text(),
+      position: row.find('td:eq(1)').text(),
+      office: row.find('td:eq(2)').text(),
+      age: row.find('td:eq(3)').text(),
+      start_date: row.find('td:eq(4)').text()
+    };
+
+    console.log("📝 Data to send:", rowData);
+
+    $.ajax({
+      url: '/save-row', // replace with your real backend
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(rowData),
+      success: function (response) {
+        alert("✅ Saved successfully!");
+      },
+      error: function (err) {
+        alert("❌ Error saving data!");
+      }
+    });
+  });
+});
+  </script>
+</body>
+</html>
